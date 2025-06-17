@@ -1,0 +1,25 @@
+name: Build and Deploy Docker App
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build Docker Image
+      run: docker build -t image-resizer .
+
+    - name: Run Docker Container
+      run: docker run -d -p 5000:5000 --name test-image image-resizer
+
+    - name: Show Running Containers
+      run: docker ps
