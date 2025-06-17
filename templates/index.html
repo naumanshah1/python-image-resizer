@@ -1,15 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Image Resizer</title>
+  <meta charset="UTF-8">
+  <title>Image Resizer</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #555;
+    }
+
+    input[type="file"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      background-color: #0066cc;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #004999;
+    }
+  </style>
 </head>
 <body>
-    <h2>Upload Image to Resize</h2>
+  <div class="container">
+    <h2>Resize Your Image</h2>
     <form action="/" method="post" enctype="multipart/form-data">
-        <input type="file" name="image" required><br>
-        <input type="number" name="width" placeholder="Width" required><br>
-        <input type="number" name="height" placeholder="Height" required><br>
-        <button type="submit">Resize</button>
+      <label for="image">Choose an Image</label>
+      <input type="file" name="image" id="image" required>
+
+      <label for="width">New Width (px)</label>
+      <input type="number" name="width" id="width" required>
+
+      <label for="height">New Height (px)</label>
+      <input type="number" name="height" id="height" required>
+
+      <button type="submit">Resize Image</button>
     </form>
+  </div>
 </body>
 </html>
