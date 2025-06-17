@@ -1,11 +1,11 @@
-name: Build and Deploy Docker App
+name: Build and Run Docker Image on Push
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Triggers when you push to 'main' branch
 
 jobs:
-  build:
+  build-and-run:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,8 +18,8 @@ jobs:
     - name: Build Docker Image
       run: docker build -t image-resizer .
 
-    - name: Run Docker Container
-      run: docker run -d -p 5000:5000 --name test-image image-resizer
+    - name: Run Docker Container (for test)
+      run: docker run -d -p 5000:5000 image-resizer
 
-    - name: Show Running Containers
+    - name: List Running Containers
       run: docker ps
