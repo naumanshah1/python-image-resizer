@@ -1,59 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    name = python resizer app
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Image Resizer</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .dropzone {
-      border: 2px dashed #94a3b8;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #7e22ce, #2563eb);
+      min-height: 100vh;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       border-radius: 1rem;
-      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    .dropzone {
+      border: 2px dashed #d1d5db;
+      border-radius: 0.75rem;
+      padding: 1.5rem;
       text-align: center;
-      transition: background-color 0.3s ease;
       cursor: pointer;
+      transition: background 0.3s;
     }
     .dropzone.dragover {
-      background-color: #e0f2fe;
-    }
-    #preview img {
-      max-width: 100%;
-      border-radius: 0.5rem;
-      margin-top: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      background-color: rgba(255, 255, 255, 0.2);
     }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-500 to-sky-400 min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center p-6">
 
-  <div class="bg-white rounded-xl shadow-xl w-full max-w-xl p-8">
-    <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">🖼️ Image Resizer</h1>
+  <div class="glass p-8 w-full max-w-lg text-white">
+    <h1 class="text-3xl font-bold mb-2 text-center">✨ Image Resizer</h1>
+    <p class="text-sm mb-6 text-center text-purple-100">Upload, resize, and download your image easily</p>
 
-    <form action="/" method="POST" enctype="multipart/form-data" id="uploadForm" class="space-y-4">
-
-      <div id="dropzone" class="dropzone">
-        <p id="dropText" class="text-gray-500">Drag & drop your image here, or <span class="underline text-blue-500">click to select</span></p>
+    <form id="uploadForm" action="/" method="POST" enctype="multipart/form-data" class="space-y-5">
+      <div id="dropzone" class="dropzone text-white">
         <input type="file" name="image" id="fileInput" accept="image/*" class="hidden" required />
-        <div id="preview"></div>
+        <p id="dropText">📂 Drag & drop image here or click to select</p>
+        <div id="preview" class="mt-4"></div>
       </div>
 
       <div class="flex gap-4">
-        <input type="number" name="width" placeholder="Width" class="w-1/2 p-2 border rounded" required>
-        <input type="number" name="height" placeholder="Height" class="w-1/2 p-2 border rounded" required>
+        <input type="number" name="width" placeholder="Width" required class="w-1/2 p-2 rounded text-gray-800" />
+        <input type="number" name="height" placeholder="Height" required class="w-1/2 p-2 rounded text-gray-800" />
       </div>
 
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-semibold">
-        Resize & Download
+      <button type="submit" class="w-full bg-white text-purple-600 font-semibold py-2 rounded hover:bg-purple-100 transition">
+        Resize Image
       </button>
     </form>
 
     {% if filename %}
     <div class="mt-6 text-center">
-      <h2 class="font-semibold text-gray-700 mb-2">🎉 Your Resized Image:</h2>
+      <h2 class="text-lg font-semibold mb-2">Your Resized Image:</h2>
       <img src="{{ url_for('static', filename='resized/' + filename) }}" class="mx-auto max-w-xs rounded shadow" />
-      <a href="{{ url_for('static', filename='resized/' + filename) }}" download class="text-blue-600 underline block mt-2">📥 Download Image</a>
+      <a href="{{ url_for('static', filename='resized/' + filename) }}" download class="block mt-2 underline text-white">📥 Download</a>
     </div>
     {% endif %}
   </div>
@@ -65,10 +71,7 @@
     const preview = document.getElementById('preview');
 
     dropzone.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
-      handleFiles(e.target.files);
-    });
+    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
     dropzone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -95,7 +98,7 @@
       dropText.textContent = `Selected: ${file.name}`;
       const reader = new FileReader();
       reader.onload = (e) => {
-        preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+        preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="rounded shadow">`;
       };
       reader.readAsDataURL(file);
     }
