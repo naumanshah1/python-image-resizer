@@ -4,51 +4,112 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Image Resizer</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(135deg, #3b82f6, #06b6d4);
-      min-height: 100vh;
-    }
     .glass {
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-radius: 1rem;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .dark .glass {
+      background: rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .dropzone {
+      border: 2px dashed #9ca3af;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      cursor: pointer;
+    }
+    .dark .dropzone {
+      border-color: #4b5563;
     }
   </style>
 </head>
-<body class="flex items-center justify-center p-6">
+<body class="bg-gradient-to-br from-blue-500 to-cyan-500 min-h-screen flex items-center justify-center text-white transition-colors duration-300 dark:bg-gray-900 dark:text-white">
 
-  <div class="glass p-8 w-full max-w-md text-center mt-16 text-white">
-    <h1 class="text-3xl font-semibold mb-2">🖼️ Image Resizer</h1>
-    <p class="text-sm mb-6 text-blue-100">Upload and resize your images beautifully</p>
+  <div class="absolute top-4 right-4">
+    <label class="flex items-center space-x-2 cursor-pointer">
+      <input type="checkbox" id="darkToggle" class="hidden">
+      <span class="text-sm">Dark Mode</span>
+      <div class="w-10 h-5 bg-gray-300 rounded-full flex items-center px-1">
+        <div class="w-4 h-4 bg-white rounded-full transition-transform" id="toggleThumb"></div>
+      </div>
+    </label>
+  </div>
 
-    <form action="/" method="POST" enctype="multipart/form-data" class="space-y-5">
-      <input type="file" name="image" accept="image/*" required class="w-full text-sm p-2 rounded bg-white text-gray-800"/>
+  <div class="glass p-8 w-full max-w-md text-center">
+    <h1 class="text-3xl font-bold mb-2">🖼️ Image Resizer</h1>
+    <p class="text-sm mb-4">Upload and resize your images beautifully</p>
+
+    <form id="uploadForm" action="/" method="POST" enctype="multipart/form-data" class="space-y-4">
+      <label id="dropZone" class="dropzone text-sm bg-white/10 text-white dark:bg-gray-800">
+        <input type="file" name="image" accept="image/*" class="hidden" required />
+        <p id="dropText">📂 Drag & drop an image here, or click to upload</p>
+      </label>
 
       <div class="flex gap-4">
-        <input type="number" name="width" placeholder="Width" required class="w-1/2 p-2 rounded bg-white text-gray-800" />
-        <input type="number" name="height" placeholder="Height" required class="w-1/2 p-2 rounded bg-white text-gray-800" />
+        <input type="number" name="width" placeholder="Width" required class="w-1/2 p-2 rounded text-black" />
+        <input type="number" name="height" placeholder="Height" required class="w-1/2 p-2 rounded text-black" />
       </div>
 
-      <button type="submit" class="w-full bg-white text-blue-600 font-bold py-2 rounded hover:bg-gray-100 transition">
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded transition">
         Resize Image
       </button>
     </form>
 
     {% if filename %}
-    <div class="mt-6">
+    <div class="mt-6 text-white">
       <h2 class="text-lg font-semibold mb-2">Your Resized Image:</h2>
-      <img src="{{ url_for('static', filename='resized/' + filename) }}" class="mx-auto rounded shadow-lg" />
-      <a href="{{ url_for('static', filename='resized/' + filename) }}" download class="block mt-3 text-white underline">📥 Download</a>
+      <img src="{{ url_for('static', filename='resized/' + filename) }}" class="mx-auto rounded shadow" />
+      <a href="{{ url_for('static', filename='resized/' + filename) }}" download class="block mt-3 text-blue-200 underline">📥 Download</a>
     </div>
     {% endif %}
   </div>
 
+  <script>
+    // Drag & Drop file handler
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = dropZone.querySelector('input');
+    const dropText = document.getElementById('dropText');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('bg-blue-100', 'dark:bg-gray-700');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('bg-blue-100', 'dark:bg-gray-700');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('bg-blue-100', 'dark:bg-gray-700');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        fileInput.files = e.dataTransfer.files;
+        dropText.textContent = `Selected: ${file.name}`;
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) dropText.textContent = `Selected: ${file.name}`;
+    });
+
+    // Dark mode toggle
+    const toggle = document.getElementById('darkToggle');
+    const body = document.body;
+    const thumb = document.getElementById('toggleThumb');
+
+    toggle.addEventListener('change', () => {
+      body.classList.toggle('dark');
+      thumb.classList.toggle('translate-x-5');
+    });
+  </script>
 </body>
 </html>
