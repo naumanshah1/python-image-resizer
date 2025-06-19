@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t image-resizer .'
+                sh 'docker build -t -resizer .'
             }
         }
 
